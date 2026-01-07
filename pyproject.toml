@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "freeagent_client"
+version = "0.1.0"
+description = "Lightweight FreeAgent API client with pluggable token storage"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [{name = ""}]
+dependencies = [
+    "requests>=2.31.0",
+    "python-dotenv>=1.0.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.4.0"]
+
+[project.scripts]
+freeagent-auth = "freeagent_client.example:main"
+
+[tool.setuptools]
+packages = ["freeagent_client"]
+
