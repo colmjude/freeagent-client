@@ -120,6 +120,26 @@ def get_invoice(invoice_id: str, store: TokenStore) -> Dict:
         f"Failed to get invoice. Status code: {resp.status_code}, Response: {resp.text}"
     )
 
+def get_invoice_pdf(invoice_id: str, store: TokenStore, *, as_base64: bool = False):
+    """Fetch an invoice PDF; return bytes or base64 string for direct storage."""
+    tokens = get_valid_access_token(store)
+    headers = {
+        "Authorization": f"Bearer {tokens['access_token']}",
+        "Accept": "application/pdf",
+    }
+    resp = requests.get(
+        f"{INVOICES_URL}/{invoice_id}/pdf", headers=headers
+    )
+    if resp.status_code == 200:
+        return (
+            base64.b64encode(resp.content).decode()
+            if as_base64
+            else resp.content
+        )
+    raise FreeAgentError(
+        f"Failed to get invoice PDF. Status code: {resp.status_code}, Response: {resp.text}"
+    )
+
 
 def get_current_user(store: TokenStore) -> str:
     tokens = get_valid_access_token(store)

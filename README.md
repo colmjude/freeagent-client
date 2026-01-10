@@ -132,6 +132,7 @@ freeagent-auth --code "<returned_code>"  # saves tokens and checks /v2/users/me
 - `get_price_list_items(store, sort="-created_at")`: list price list items (newest first by default).
 - `get_contacts(store, sort="-created_at")`: list contacts (newest first by default).
 - `get_invoice(invoice_id, store)`: fetch an invoice by ID.
+- `get_invoice_pdf(invoice_id, store, as_base64=False)`: fetch invoice PDF as bytes (default) or base64 string for storage.
 - `create_expense(...)`: create an expense (supports VAT, attachments with basic MIME validation, category code selection).
 - `create_invoice(...)`: create an invoice with contact, status (Draft), dates/terms, currency, comments, and line items.
 - `attach_to_expense(expense_id, file_path, store)`: attach a file to an existing expense.
