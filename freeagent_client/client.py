@@ -24,6 +24,7 @@ INVOICES_URL = f"{FREEAGENT_BASE}/invoices"
 EXPENSES_URL = f"{FREEAGENT_BASE}/expenses"
 PRICE_LIST_ITEMS_URL = f"{FREEAGENT_BASE}/price_list_items"
 CONTACTS_URL = f"{FREEAGENT_BASE}/contacts"
+BANK_ACCOUNTS_URL = f"{FREEAGENT_BASE}/bank_accounts"
 
 # Load .env values once so callers can rely on local files without shell exports.
 load_dotenv()
@@ -174,6 +175,28 @@ def get_contacts(store: TokenStore, sort: str = "-created_at") -> Dict:
         return resp.json()
     raise FreeAgentError(
         f"Failed to get contacts. Status code: {resp.status_code}, Response: {resp.text}"
+    )
+
+def get_bank_accounts(store: TokenStore) -> Dict:
+    """Fetch list of bank accounts."""
+    tokens = get_valid_access_token(store)
+    headers = _build_headers(tokens["access_token"])
+    resp = requests.get(BANK_ACCOUNTS_URL, headers=headers)
+    if resp.status_code == 200:
+        return resp.json()
+    raise FreeAgentError(
+        f"Failed to get bank accounts. Status code: {resp.status_code}, Response: {resp.text}"
+    )
+
+def get_bank_account(account_id: str, store: TokenStore) -> Dict:
+    """Fetch details for a specific bank account by ID."""
+    tokens = get_valid_access_token(store)
+    headers = _build_headers(tokens["access_token"])
+    resp = requests.get(f"{BANK_ACCOUNTS_URL}/{account_id}", headers=headers)
+    if resp.status_code == 200:
+        return resp.json()
+    raise FreeAgentError(
+        f"Failed to get bank account. Status code: {resp.status_code}, Response: {resp.text}"
     )
 
 def create_invoice(
