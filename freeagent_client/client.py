@@ -121,6 +121,42 @@ def get_invoice(invoice_id: str, store: TokenStore) -> Dict:
         f"Failed to get invoice. Status code: {resp.status_code}, Response: {resp.text}"
     )
 
+def get_invoices(
+    store: TokenStore,
+    *,
+    last_n_months: int | None = None,
+    updated_since: str | None = None,
+    open_only: bool = False,
+    sort: str = "created_at",
+) -> Dict:
+    """Fetch invoices with optional filters and sorting."""
+    allowed_sorts = {"created_at", "updated_at", "-created_at", "-updated_at"}
+    if sort not in allowed_sorts:
+        raise FreeAgentError(f"Invalid sort '{sort}'. Must be one of {sorted(allowed_sorts)}")
+
+    view = None
+    if last_n_months is not None:
+        view = f"last_{last_n_months}_months"
+    if open_only:
+        if view:
+            raise FreeAgentError("Only one view filter can be used at a time")
+        view = "open"
+
+    params = {"sort": sort}
+    if view:
+        params["view"] = view
+    if updated_since:
+        params["updated_since"] = updated_since
+
+    tokens = get_valid_access_token(store)
+    headers = _build_headers(tokens["access_token"])
+    resp = requests.get(INVOICES_URL, headers=headers, params=params)
+    if resp.status_code == 200:
+        return resp.json()
+    raise FreeAgentError(
+        f"Failed to get invoices. Status code: {resp.status_code}, Response: {resp.text}"
+    )
+
 def get_invoice_pdf(invoice_id: str, store: TokenStore, *, as_base64: bool = False):
     """Fetch an invoice PDF; return bytes or base64 string for direct storage."""
     tokens = get_valid_access_token(store)
