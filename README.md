@@ -134,7 +134,7 @@ freeagent-auth --code "<returned_code>"  # saves tokens and checks /v2/users/me
 - `get_bank_accounts(store)`: list bank accounts.
 - `get_bank_account(account_id, store)`: fetch a specific bank account.
 - `get_invoice(invoice_id, store)`: fetch an invoice by ID.
-- `get_invoices(store, last_n_months=None, updated_since=None, open_only=False, sort="created_at")`: list invoices with filters and sorting.
+- `get_invoices(store, last_n_months=None, updated_since=None, open_only=False, sort="created_at", per_page=25, page=1)`: list invoices with filters, sorting, and pagination (max `per_page` 100).
 - `get_invoice_pdf(invoice_id, store, as_base64=False)`: fetch invoice PDF as bytes (default) or base64 string for storage.
 - `create_expense(...)`: create an expense (supports VAT, attachments with basic MIME validation, category code selection).
 - `create_invoice(...)`: create an invoice with contact, status (Draft), dates/terms, currency, comments, and line items.

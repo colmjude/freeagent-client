@@ -128,11 +128,17 @@ def get_invoices(
     updated_since: str | None = None,
     open_only: bool = False,
     sort: str = "created_at",
+    per_page: int = 25,
+    page: int = 1,
 ) -> Dict:
     """Fetch invoices with optional filters and sorting."""
     allowed_sorts = {"created_at", "updated_at", "-created_at", "-updated_at"}
     if sort not in allowed_sorts:
         raise FreeAgentError(f"Invalid sort '{sort}'. Must be one of {sorted(allowed_sorts)}")
+    if per_page < 1 or per_page > 100:
+        raise FreeAgentError("per_page must be between 1 and 100")
+    if page < 1:
+        raise FreeAgentError("page must be 1 or greater")
 
     view = None
     if last_n_months is not None:
@@ -142,7 +148,7 @@ def get_invoices(
             raise FreeAgentError("Only one view filter can be used at a time")
         view = "open"
 
-    params = {"sort": sort}
+    params = {"sort": sort, "per_page": per_page, "page": page}
     if view:
         params["view"] = view
     if updated_since:
