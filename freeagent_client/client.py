@@ -207,6 +207,53 @@ def get_price_list_items(store: TokenStore, sort: str = "-created_at") -> Dict:
         f"Failed to get price list items. Status code: {resp.status_code}, Response: {resp.text}"
     )
 
+
+def create_price_list_item(
+    *,
+    code: str,
+    description: str,
+    item_type: str,
+    price: str,
+    quantity: str,
+    store: TokenStore,
+    vat_status: str | None = None,
+    sales_tax_rate: str | None = None,
+    second_sales_tax_rate: str | None = None,
+    category: str | None = None,
+    stock_item: str | None = None,
+) -> Dict:
+    """Create a price list item."""
+    tokens = get_valid_access_token(store)
+    headers = _build_headers(tokens["access_token"])
+
+    payload: Dict[str, Dict[str, str]] = {
+        "price_list_item": {
+            "code": code,
+            "description": description,
+            "item_type": item_type,
+            "price": price,
+            "quantity": quantity,
+        }
+    }
+    if vat_status is not None:
+        payload["price_list_item"]["vat_status"] = vat_status
+    if sales_tax_rate is not None:
+        payload["price_list_item"]["sales_tax_rate"] = sales_tax_rate
+    if second_sales_tax_rate is not None:
+        payload["price_list_item"]["second_sales_tax_rate"] = second_sales_tax_rate
+    if category is not None:
+        payload["price_list_item"]["category"] = category
+    if stock_item is not None:
+        payload["price_list_item"]["stock_item"] = stock_item
+
+    resp = requests.post(PRICE_LIST_ITEMS_URL, headers=headers, json=payload)
+    if resp.status_code == 201:
+        return resp.json()
+    raise FreeAgentError(
+        f"Failed to create price list item. Status code: {resp.status_code}, Response: {resp.text}"
+    )
+
+
 def get_contacts(store: TokenStore, sort: str = "-created_at") -> Dict:
     """Fetch contacts; defaults to newest first via `sort=-created_at`."""
     tokens = get_valid_access_token(store)

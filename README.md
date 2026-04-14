@@ -48,6 +48,7 @@ from freeagent_client import (
     get_invoice,
     create_expense,
     create_invoice,
+    create_price_list_item,
 )
 
 store = FileTokenStore()
@@ -130,6 +131,7 @@ freeagent-auth --code "<returned_code>"  # saves tokens and checks /v2/users/me
 - `check_connection(store)`: quick `/v2/users/me` connectivity check.
 - `get_current_user(store)`: fetch current user details (full user payload).
 - `get_price_list_items(store, sort="-created_at")`: list price list items (newest first by default).
+- `create_price_list_item(...)`: create a price list item in FreeAgent.
 - `get_contacts(store, sort="-created_at")`: list contacts (newest first by default).
 - `get_bank_accounts(store)`: list bank accounts.
 - `get_bank_account(account_id, store)`: fetch a specific bank account.
@@ -167,3 +169,22 @@ invoice = create_invoice(
 ```
 
 To test locally: run the auth helper to get tokens (`freeagent-auth --code ...`), then call `create_invoice` with real contact URLs and item data from your FreeAgent account. The function returns the API response JSON so you can inspect the result.
+
+### Creating a price list item
+
+```python
+from freeagent_client import create_price_list_item, FileTokenStore
+
+store = FileTokenStore()
+item = create_price_list_item(
+    code="CONSULTING_DAY",
+    description="Consulting day rate",
+    item_type="Products",
+    price="750.00",
+    quantity="1.0",
+    vat_status="20.0%",
+    store=store,
+)
+```
+
+`create_price_list_item` sends `POST /v2/price_list_items` with the required `price_list_item` payload and returns the API response JSON.
